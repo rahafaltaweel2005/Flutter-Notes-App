@@ -5,8 +5,16 @@ import '../controller/edit_note_provider.dart';
 
 
 class EditNoteScreen extends StatefulWidget {
-  const EditNoteScreen({super.key});
+  final String id;
+  final String title;
+  final String content;
 
+  const EditNoteScreen({
+    super.key,
+    required this.id,
+    required this.title,
+    required this.content,
+  });
   @override
   State<EditNoteScreen> createState() => _EditNoteScreenState();
 }
@@ -15,7 +23,13 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   TextEditingController id = TextEditingController();
   TextEditingController title = TextEditingController();
   TextEditingController content = TextEditingController();
-
+  @override
+  void initState() {
+    super.initState();
+    id.text = widget.id;
+    title.text = widget.title;
+    content.text = widget.content;
+  }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;

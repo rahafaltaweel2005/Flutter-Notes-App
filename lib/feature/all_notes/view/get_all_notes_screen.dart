@@ -27,12 +27,7 @@ class _GetAllNotesScreenState extends State<GetAllNotesScreen> {
     final allNote = context.watch<GetAllNotesProvider>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Note"),
-        actions: [ElevatedButton(onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => EditNoteScreen(),));
-        }, child: Icon(Icons.edit))],
-      ),
+      appBar: AppBar(title: Text("Note"), actions: []),
       body: ListView.separated(
         itemBuilder: (context, index) {
           return Container(
@@ -40,18 +35,38 @@ class _GetAllNotesScreenState extends State<GetAllNotesScreen> {
               horizontal: size.width * 0.02,
               vertical: size.height * 0.02,
             ),
-            child: Column(
-              spacing: 5,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  allNote.notesList[index].title.toString(),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 20,
-                  ),
+                Column(
+                  spacing: 5,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      allNote.notesList[index].title.toString(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                      ),
+                    ),
+                    Text(allNote.notesList[index].content.toString()),
+                  ],
                 ),
-                Text(allNote.notesList[index].content.toString()),
+                Spacer(),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditNoteScreen(
+                          id: allNote.notesList[index].id.toString(),
+                          title: allNote.notesList[index].title.toString(),
+                          content: allNote.notesList[index].content.toString(),
+                        ),
+                      ),
+                    );
+                  },
+                  child: Icon(Icons.edit),
+                ),
               ],
             ),
           );
@@ -63,7 +78,10 @@ class _GetAllNotesScreenState extends State<GetAllNotesScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddNoteScreen(),));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddNoteScreen()),
+          );
         },
         child: Icon(Icons.add),
       ),

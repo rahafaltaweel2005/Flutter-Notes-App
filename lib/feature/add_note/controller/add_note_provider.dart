@@ -16,21 +16,55 @@ class AddNoteProvider extends ChangeNotifier {
     required String title,
     required String content,
   }) async {
-    isLoading = true;
-    notifyListeners();
+    if (title.trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Title is required")));
+      return false;
+    }
+    if (content.trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Content is required")));
+      return false;
+    }
     try {
-      final response = await http.post(url, 
-          body: jsonEncode({
-            "title" : title,
-            "content" :content
-          }));
-      final data = jsonDecode(response.body);
+      isLoading = true;
+      notifyListeners();
+      final Map<String, dynamic> requestBody = {
+        "title": title.trim(),
+        "content": content.trim(),
+      };
+      print("Request Body: ${jsonEncode(requestBody)}");
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      print("Status Code :${response.statusCode}");
+      print("Response Body :${response.body}");
+      if (response.body.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Empty response from server")));
+        return false;
+      }
+      final decodedJson = jsonDecode(response.body);
+
+      if(decodedJson is! Map<String, dynamic>){
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Invalid response format")));
+      return false;
+      }
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Success")));
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => GetAllNotesScreen(),));
-
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => GetAllNotesScreen()),
+        );
       } else if (response.statusCode == 409) {
         ScaffoldMessenger.of(
           context,
