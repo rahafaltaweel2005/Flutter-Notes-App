@@ -16,47 +16,15 @@ class AddNoteProvider extends ChangeNotifier {
     required String title,
     required String content,
   }) async {
-    if (title.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Title is required")));
-      return false;
-    }
-    if (content.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Content is required")));
-      return false;
-    }
+    isLoading = true;
+    notifyListeners();
     try {
-      isLoading = true;
-      notifyListeners();
-      final Map<String, dynamic> requestBody = {
-        "title": title.trim(),
-        "content": content.trim(),
-      };
-      print("Request Body: ${jsonEncode(requestBody)}");
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestBody),
-      );
-      print("Status Code :${response.statusCode}");
-      print("Response Body :${response.body}");
-      if (response.body.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Empty response from server")));
-        return false;
-      }
-      final decodedJson = jsonDecode(response.body);
-
-      if(decodedJson is! Map<String, dynamic>){
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Invalid response format")));
-      return false;
-      }
+      final response = await http.post(url,
+          body: jsonEncode({
+            "title" : title,
+            "content" :content
+          }));
+      final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
